@@ -34,10 +34,12 @@ services:
       - route-net
     restart: on-failure
     environment:
-      LOG_LEVEL: "debug"
       SPAN_STORAGE_TYPE: "kafka"
-      KAFKA_PRODUCER_BROKERS: ${KAFKA_URL}
-      KAFKA_PRODUCER_TOPIC: "otel-traces"
+    command: [
+      "--kafka.producer.brokers=${KAFKA_URL}",
+      "--kafka.producer.topic=otel-traces",
+      "--log-level=debug"
+    ]
 
 networks:
   route-net:
