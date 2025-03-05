@@ -1,0 +1,35 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+  # kafka/logs:
+  #   brokers: ["kafka:9092"]
+  #   topic: "otel-logs"
+  #   encoding: "otlp_proto"
+
+exporters:
+  otlp/jaeger:
+    endpoint: "jaeger-collector:4317"
+    tls:
+      insecure: true
+ 
+  debug:
+    verbosity: detailed
+
+extensions:
+  health_check:
+
+service:
+  extensions: [health_check]
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: []
+      exporters: [otlp/jaeger, debug]
+    # logs:
+    #   receivers: [kafka/logs]
+    #   processors: []
+    #   exporters: [opensearch, debug]

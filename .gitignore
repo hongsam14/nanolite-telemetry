@@ -1,0 +1,8 @@
+Telemetry-Backend/.env
+Telemetry-Backend/opensearch-data1
+Telemetry-Backend/opensearch-data2
+
+Telemetry-LoadBalancer/.env
+Telemetry-LoadBalancer/kafka-data
+
+Telemetry-Router/.env
