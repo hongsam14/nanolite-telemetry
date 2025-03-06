@@ -27,7 +27,6 @@ service:
   pipelines:
     traces:
       receivers: [otlp]
-      processors: []
       exporters: [otlp/jaeger, debug]
     # logs:
     #   receivers: [kafka/logs]

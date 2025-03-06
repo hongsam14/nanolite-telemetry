@@ -1,33 +1,34 @@
 version: "3.7"
 
 services:
-  kafka-broker00:
+  kafka-controller:
     image: confluentinc/cp-kafka:latest
-    container_name: kafka-broker00
+    container_name: kafka-controller
     restart: always
-    ports:
-      - "19092:19092"
-    expose:
-      - "19092"
+    # ports:
+    #   - "19092:19092"
+    # expose:
+    #   - "19092"
     environment:
       # == Kafka KRaft 설정 ==
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
       KAFKA_NODE_ID: 0
-      KAFKA_BROKER_ID: 0
-      KAFKA_PROCESS_ROLES: "controller,broker"
-      KAFKA_CONTROLLER_QUORUM_VOTERS: "0@kafka-broker00:9093,1@kafka-broker01:9093,2@kafka-broker02:9093"
+      # KAFKA_BROKER_ID: 0
+      KAFKA_PROCESS_ROLES: "controller"
+      KAFKA_CONTROLLER_QUORUM_VOTERS: "0@kafka-controller:9093"
       CLUSTER_ID: ${KAFKA_CLUSTER_ID}
       # === Listener 설정 ===
       KAFKA_ALLOW_PLAINTEXT_LISTENER: "yes"
-      KAFKA_LISTENERS: "PLAINTEXT://:9092,CONTROLLER://:9093,EXTERNAL://0.0.0.0:19092"
-      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://kafka-broker00:9092,CONTROLLER://kafka-broker00:9093,EXTERNAL://${KAFKA_URL}:19092"
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT"
+      # KAFKA_LISTENERS: "PLAINTEXT://:9092,CONTROLLER://:9093,EXTERNAL://0.0.0.0:19092"
+      KAFKA_LISTENERS: "CONTROLLER://:9093"
+      # KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://kafka-controller:9092,CONTROLLER://kafka-controller:9093"
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT"
       KAFKA_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
       KAFKA_INTER_BROKER_LISTENER_NAME: "PLAINTEXT"
       # == Cluster 설정 ==
       KAFKA_LOG_DIRS: "/var/lib/kafka/data"
     volumes:
-      - kafka-broker00-data:/var/lib/kafka/data
+      - kafka-controller-data:/var/lib/kafka/data
     networks:
       - kafka-network
     
@@ -44,12 +45,13 @@ services:
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
       KAFKA_NODE_ID: 1
       KAFKA_BROKER_ID: 1
-      KAFKA_PROCESS_ROLES: "controller,broker"
-      KAFKA_CONTROLLER_QUORUM_VOTERS: "0@kafka-broker00:9093,1@kafka-broker01:9093,2@kafka-broker02:9093"
+      KAFKA_PROCESS_ROLES: "broker"
+      KAFKA_CONTROLLER_QUORUM_VOTERS: "0@kafka-controller:9093"
       CLUSTER_ID: ${KAFKA_CLUSTER_ID}
       # === Listener 설정 ===
       KAFKA_ALLOW_PLAINTEXT_LISTENER: "yes"
-      KAFKA_LISTENERS: "PLAINTEXT://:9092,CONTROLLER://:9093,EXTERNAL://0.0.0.0:29092"
+      # KAFKA_LISTENERS: "PLAINTEXT://:9092,CONTROLLER://:9093,EXTERNAL://0.0.0.0:29092"
+      KAFKA_LISTENERS: "PLAINTEXT://:9092,EXTERNAL://0.0.0.0:29092"
       KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://kafka-broker01:9092,CONTROLLER://kafka-broker01:9093,EXTERNAL://${KAFKA_URL}:29092"
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT"
       KAFKA_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
@@ -73,12 +75,13 @@ services:
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
       KAFKA_NODE_ID: 2
       KAFKA_BROKER_ID: 2
-      KAFKA_PROCESS_ROLES: "controller,broker"
-      KAFKA_CONTROLLER_QUORUM_VOTERS: "0@kafka-broker00:9093,1@kafka-broker01:9093,2@kafka-broker02:9093"
+      KAFKA_PROCESS_ROLES: "broker"
+      KAFKA_CONTROLLER_QUORUM_VOTERS: "0@kafka-controller:9093"
       CLUSTER_ID: ${KAFKA_CLUSTER_ID}
       # === Listener 설정 ===
       KAFKA_ALLOW_PLAINTEXT_LISTENER: "yes"
-      KAFKA_LISTENERS: "PLAINTEXT://:9092,CONTROLLER://:9093,EXTERNAL://0.0.0.0:39092"
+      # KAFKA_LISTENERS: "PLAINTEXT://:9092,CONTROLLER://:9093,EXTERNAL://0.0.0.0:39092"
+      KAFKA_LISTENERS: "PLAINTEXT://:9092,EXTERNAL://0.0.0.0:39092"
       KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://kafka-broker02:9092,CONTROLLER://kafka-broker02:9093,EXTERNAL://${KAFKA_URL}:39092"
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT"
       KAFKA_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
@@ -88,9 +91,37 @@ services:
       - kafka-broker02-data:/var/lib/kafka/data
     networks:
       - kafka-network
-
-
-
+      
+  kafka-broker03:
+    image: confluentinc/cp-kafka:latest
+    container_name: kafka-broker03
+    restart: always
+    ports:
+      - "49092:49092"
+    expose:
+      - "49092"
+    environment:
+      # == Kafka KRaft 설정 ==
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_NODE_ID: 3
+      KAFKA_BROKER_ID: 3
+      KAFKA_PROCESS_ROLES: "broker"
+      KAFKA_CONTROLLER_QUORUM_VOTERS: "0@kafka-controller:9093"
+      CLUSTER_ID: ${KAFKA_CLUSTER_ID}
+      # === Listener 설정 ===
+      KAFKA_ALLOW_PLAINTEXT_LISTENER: "yes"
+      # KAFKA_LISTENERS: "PLAINTEXT://:9092,CONTROLLER://:9093,EXTERNAL://0.0.0.0:49092"
+      KAFKA_LISTENERS: "PLAINTEXT://:9092,EXTERNAL://0.0.0.0:49092"
+      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://kafka-broker03:9092,CONTROLLER://kafka-broker03:9093,EXTERNAL://${KAFKA_URL}:49092"
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT"
+      KAFKA_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
+      KAFKA_INTER_BROKER_LISTENER_NAME: "PLAINTEXT"
+      KAFKA_LOG_DIRS: "/var/lib/kafka/data"
+    volumes:
+      - kafka-broker03-data:/var/lib/kafka/data
+    networks:
+      - kafka-network
+  
   kafka-ui:
     image: provectuslabs/kafka-ui:latest
     container_name: kafka-ui
@@ -101,15 +132,16 @@ services:
       - "8080"
     environment:
       KAFKA_CLUSTERS_0_NAME: "local-Kraft-Cluster"
-      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: "kafka-broker00:9092,kafka-broker01:9092,kafka-broker02:9092"
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: "kafka-controller:9092,kafka-broker01:9092,kafka-broker02:9092,kafka-broker03:9092"
       KAFKA_CLUSTER_0_METRICS_PORT: "9999"
       DYNAMIC_CONFIG_ENABLED: "true"
       KAFKA_CLUSTER_0_AUDIT_TOPICAUDITENABLED: "true"
       KAFKA_CLUSTER_0_CONSOLEAUDITENABLED: "true"
     depends_on:
-      - kafka-broker00
+      - kafka-controller
       - kafka-broker01
       - kafka-broker02
+      - kafka-broker03
     networks:
       - kafka-network
 
@@ -119,12 +151,12 @@ networks:
 
 volumes:
   
-  kafka-broker00-data:
+  kafka-controller-data:
     driver: local
     driver_opts:
       o: bind
       type: none
-      device: ./kafka-broker00-data
+      device: ./kafka-controller-data
   
   kafka-broker01-data:
     driver: local
@@ -139,3 +171,10 @@ volumes:
       o: bind
       type: none
       device: ./kafka-broker02-data
+      
+  kafka-broker03-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ./kafka-broker03-data

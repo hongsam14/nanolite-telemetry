@@ -38,7 +38,9 @@ services:
     command: [
       "--kafka.producer.brokers=${KAFKA_URL}",
       "--kafka.producer.topic=otel-traces",
-      "--log-level=debug"
+      "--kafka.producer.tls.enabled=false",
+      "--kafka.producer.encoding=protobuf",
+      "--log-level=debug",
     ]
 
 networks:
