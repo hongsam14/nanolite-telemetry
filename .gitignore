@@ -3,8 +3,7 @@ Telemetry-Backend/opensearch-data1
 Telemetry-Backend/opensearch-data2
 
 Telemetry-LoadBalancer/.env
-Telemetry-LoadBalancer/kafka-broker00-data
-Telemetry-LoadBalancer/kafka-broker01-data
-Telemetry-LoadBalancer/kafka-broker02-data
+Telemetry-LoadBalancer/kafka-controller-data
+Telemetry-LoadBalancer/kafka-broker[0-9[0-9]*-data
 
 Telemetry-Router/.env
