@@ -1,6 +1,7 @@
 Telemetry-Backend/.env
 Telemetry-Backend/opensearch-data1
 Telemetry-Backend/opensearch-data2
+Telemetry-Backend/grafana-data
 
 Telemetry-LoadBalancer/.env
 Telemetry-LoadBalancer/kafka-controller-data

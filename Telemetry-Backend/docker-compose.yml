@@ -177,7 +177,7 @@ services:
     container_name: otel-collector
     restart: always
     volumes:
-      - ./logstash/config.yml/:/etc/opentelemetry-collector.yml
+      - ./volume/config.yml:/etc/opentelemetry-collector.yml
       - /var/run/docker.sock:/var/run/docker.sock
     command:
       - "--config=/etc/opentelemetry-collector.yml"
@@ -198,6 +198,23 @@ services:
     networks:
       - otel-net
 
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    networks:
+      - otel-net
+    volumes:
+      - grafana-data:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GF_SECURITY_ADMIN_PASSWORD}
+      - GF_SECURITY_ADMIN_USER=${GF_SECURITY_ADMIN_USER}
+    depends_on:
+      - opensearch-node1
+      - opensearch-node2
+      - jaeger-ingester
+
 volumes:
   opensearch-data1:
     driver: local
@@ -217,12 +234,18 @@ volumes:
       o: bind
       type: none
       device: ./kafka-data
-  logstash-pipeline:
+  grafana-data:
     driver: local
     driver_opts:
       o: bind
       type: none
-      device: ./logstash/logstash-pipeline
+      device: ./grafana-data
+  # log-pipeline:
+  #   driver: local
+  #   driver_opts:
+  #     o: bind
+  #     type: none
+  #     device: ./volume
   
   
   
