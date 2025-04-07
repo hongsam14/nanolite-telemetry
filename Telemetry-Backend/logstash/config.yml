@@ -1,0 +1,45 @@
+receivers:
+  kafka:
+    brokers: ["${KAFKA_URL}"]
+    topic: "${KAFKA_TOPICS}"
+    encoding: "otlp_json"
+    client_id: "logs-group"
+    group_id: "${KAFKA_GROUP_ID}"
+
+exporters:
+  opensearch:
+    logs_index: "otel-logs-index"
+    http:
+      endpoint: "${HOST_URL}"
+      auth:
+        authenticator: basicauth/client
+      tls:
+        insecure: true
+      compression: none
+  
+  debug:
+    verbosity: detailed
+
+processors:
+  batch:
+    send_batch_size: 100
+    timeout: 5s
+
+extensions:
+  health_check:
+    endpoint: 0.0.0.0:13133
+  basicauth/client:
+    client_auth:
+      username: "${DATABASE_ID}"
+      password: "${DATABASE_PW}"
+
+service:
+  extensions: [health_check, basicauth/client]
+  pipelines:
+    logs:
+      receivers: [kafka]
+      processors: [batch]
+      exporters: [opensearch]
+  # telemetry:
+  #   logs:
+  #     level: debug

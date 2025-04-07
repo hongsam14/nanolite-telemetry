@@ -5,30 +5,41 @@ receivers:
         endpoint: 0.0.0.0:4317
       http:
         endpoint: 0.0.0.0:4318
-  # kafka/logs:
-  #   brokers: ["kafka:9092"]
-  #   topic: "otel-logs"
-  #   encoding: "otlp_proto"
 
 exporters:
   otlp/jaeger:
     endpoint: "jaeger-collector:4317"
     tls:
       insecure: true
- 
+
+  kafka:
+    brokers: ["${KAFKA_LOGS_URLS}"]
+    topic: "otel-logs"
+    encoding: "otlp_json"
+  
   debug:
     verbosity: detailed
 
+processors:
+  batch:
+    send_batch_size: 100
+    timeout: 5s
+
 extensions:
   health_check:
+    endpoint: 0.0.0.0:13133
 
 service:
   extensions: [health_check]
   pipelines:
     traces:
       receivers: [otlp]
-      exporters: [otlp/jaeger, debug]
-    # logs:
-    #   receivers: [kafka/logs]
-    #   processors: []
-    #   exporters: [opensearch, debug]
+      processors: [batch]
+      exporters: [otlp/jaeger]
+    logs:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [kafka, debug]
+  # telemetry:
+  #   logs:
+  #     level: debug

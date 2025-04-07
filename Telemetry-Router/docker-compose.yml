@@ -2,7 +2,7 @@ version: "3.7"
 
 services:
   otel-router:
-    image: otel/opentelemetry-collector-contrib:0.120.0
+    image: otel/opentelemetry-collector-contrib:latest
     # image: otel/opentelemetry-collector-contrib:0.43.0
     container_name: otel-router
     restart: always
@@ -16,6 +16,8 @@ services:
       - 4317:4317   # otlp grpc receiver
       - 4318:4318   # otlp http receiver
       - 13133:13133 # health check extension
+    environment:
+      - KAFKA_LOGS_URLS=${KAFKA_LOGS_URLS}
     expose:
       - "4317"
     depends_on:
@@ -36,7 +38,7 @@ services:
     environment:
       SPAN_STORAGE_TYPE: "kafka"
     command: [
-      "--kafka.producer.brokers=${KAFKA_URL}",
+      "--kafka.producer.brokers=${KAFKA_TRACE_URLS}",
       "--kafka.producer.topic=otel-traces",
       "--kafka.producer.tls.enabled=false",
       "--kafka.producer.encoding=protobuf",
